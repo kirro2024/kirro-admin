@@ -1,0 +1,9 @@
+{% block content %}
+{% if user.is_authenticated and user.is_staff %}
+<ul>
+    {% for r in response %}
+    <li>{{ r }}</li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock content %}

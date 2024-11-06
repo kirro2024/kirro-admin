@@ -1,0 +1,4 @@
+kirroapp-env/
+__pycache__/
+*.env
+*.sqlite3
