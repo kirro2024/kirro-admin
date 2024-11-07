@@ -5,22 +5,29 @@ from users.models import CustomUser
 
 
 class JobTracker(models.Model):
+    """ Model a job application."""
 
 
     class ApplicationStatus(models.TextChoices):
+        """ Model Choices."""
 
 
         IN_PROGRESS = "In Progress", _("In Progress")
         APPLIED = "Applied", _("Applied")
         REJECTED = "Rejected", _("Rejected")
         INTERVIEW = "Interview", _("Interview")
-    
+
+    # Model fields
     applicant = models.ForeignKey(
         CustomUser, 
         on_delete=models.CASCADE, 
         to_field='email',
         limit_choices_to={'is_staff': False},
-        help_text='Email(ID) of applicant',
+        help_text='Email (ID) of applicant',
+        )
+    applicant_name = models.CharField(
+        max_length=200, 
+        help_text='Fullname of applicant',
         )
     company_applied_to = models.CharField(max_length=255)
     position_applied = models.CharField(max_length=255)
@@ -57,5 +64,6 @@ class JobTracker(models.Model):
     
 
     def __str__(self):
-        return self.applicant.email
+        """ Return a string representation of the model object."""
+        return self.applicant_name
 

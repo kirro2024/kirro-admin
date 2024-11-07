@@ -12,8 +12,9 @@ admin.site.index_title = 'Welcome to Kirro Admin Portal'
 @admin.register(JobTracker)
 class JobTrackerAdmin(admin.ModelAdmin):
     list_display = [
-        'id', 'company_applied_to', 
+        'id', 'applicant', 'applicant_name', 'company_applied_to', 
         'position_applied', 'date_submitted', 'experience_required', 
-        'resume_used', 'application_status', 'job_notes'
+        'resume_used', 'application_status', 'job_notes', 
+        'created_by', 'updated_by',
         ]
 
