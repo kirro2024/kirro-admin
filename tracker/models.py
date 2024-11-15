@@ -1,29 +1,18 @@
 from django.db import models
 
-from django.utils.translation import gettext_lazy as _
-from users.models import CustomUser
+from preferences.models import UserProfile
+from django.conf import settings
+from .callables import ApplicationStatus
+from encrypted_model_fields.fields import EncryptedCharField
 
 
 class JobTracker(models.Model):
     """ Model a job application."""
-
-
-    class ApplicationStatus(models.TextChoices):
-        """ Model Choices."""
-
-
-        IN_PROGRESS = "In Progress", _("In Progress")
-        APPLIED = "Applied", _("Applied")
-        REJECTED = "Rejected", _("Rejected")
-        INTERVIEW = "Interview", _("Interview")
-
-    # Model fields
     applicant = models.ForeignKey(
-        CustomUser, 
+        UserProfile, 
         on_delete=models.CASCADE, 
         to_field='email',
-        limit_choices_to={'is_staff': False},
-        help_text='Email (ID) of applicant',
+        help_text='Email of applicant',
         )
     applicant_name = models.CharField(
         max_length=200, 
@@ -39,9 +28,15 @@ class JobTracker(models.Model):
         choices = ApplicationStatus,
         default=ApplicationStatus.IN_PROGRESS,
         )
-    job_notes = models.TextField()
+    shared_email = models.EmailField()
+    sensitive_info = EncryptedCharField(max_length=100)
+    job_notes = models.TextField(null=True, blank=True)
+    job_description_link = models.URLField(
+        max_length=255, 
+        help_text='link to job description',
+        )
     created_by = models.ForeignKey(
-        CustomUser, 
+        settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
         limit_choices_to={"is_staff": True},
         related_name='dep_create',
@@ -49,21 +44,32 @@ class JobTracker(models.Model):
         help_text='Email of staff initially responsible for this task.',
         )
     updated_by = models.ForeignKey(
-        CustomUser, 
+        settings.AUTH_USER_MODEL, 
         on_delete=models.CASCADE, 
         limit_choices_to={"is_staff": True},
         related_name = 'dep_update',
         to_field='email',
         help_text='Email of staff that updated this task.',
         )
+    #application_counter = models.PositiveIntegerField(editable=False, default=0)
+    
 
 
     class Meta:
         verbose_name_plural = 'Job Tracker Information'
         ordering = ['-applicant']
-    
+
 
     def __str__(self):
         """ Return a string representation of the model object."""
-        return self.applicant_name
+        return self.applicant.email
+
+    
+
+
+
+        
+            
+
+
 

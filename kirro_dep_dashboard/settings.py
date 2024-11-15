@@ -31,10 +31,16 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # Third party apps
+    'encrypted_model_fields',
+    'django_countries',
+
     # Local apps
     'users.apps.UsersConfig',
     'tracker.apps.TrackerConfig',
     'api.apps.ApiConfig',
+    'preferences.apps.PreferencesConfig',
+    'metrics.apps.MetricsConfig',
 ]
 
 MIDDLEWARE = [
@@ -117,6 +123,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = 'media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -126,5 +133,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.CustomUser"
+
+FIELD_ENCRYPTION_KEY = config('FIELD_ENCRYPTION_KEY', '')
 
 

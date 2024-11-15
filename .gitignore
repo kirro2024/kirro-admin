@@ -2,3 +2,4 @@ kirroapp-env/
 __pycache__/
 *.env
 *.sqlite3
+supabase_models.py

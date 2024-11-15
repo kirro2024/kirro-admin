@@ -1,9 +1,14 @@
+{% block header %}
+{% endblock %}
+
 {% block content %}
 {% if user.is_authenticated and user.is_staff %}
-<ul>
+<ol>
     {% for r in response %}
-    <li>{{ r }}</li>
+    <li>
+        <pre>{{ r | pprint }}</pre>
+    </li>
     {% endfor %}
-</ul>
+</ol>
 {% endif %}
 {% endblock content %}
