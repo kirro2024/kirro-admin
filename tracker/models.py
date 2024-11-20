@@ -2,7 +2,7 @@ from django.db import models
 
 from preferences.models import UserProfile
 from django.conf import settings
-from .callables import ApplicationStatus
+from .callables import ApplicationStatus, JobType, JobMode, JobLevelPreference
 from encrypted_model_fields.fields import EncryptedCharField
 
 
@@ -14,10 +14,6 @@ class JobTracker(models.Model):
         to_field='email',
         help_text='Email of applicant',
         )
-    applicant_name = models.CharField(
-        max_length=200, 
-        help_text='Fullname of applicant',
-        )
     company_applied_to = models.CharField(max_length=255)
     position_applied = models.CharField(max_length=255)
     date_submitted = models.DateField(auto_now_add=True)
@@ -25,15 +21,41 @@ class JobTracker(models.Model):
     resume_used = models.FileField(upload_to="uploads/%Y/%m/%d/")
     application_status = models.CharField(
         max_length=12,
-        choices = ApplicationStatus,
+        choices=ApplicationStatus,
         default=ApplicationStatus.IN_PROGRESS,
         )
     shared_email = models.EmailField()
     sensitive_info = EncryptedCharField(max_length=100)
-    job_notes = models.TextField(null=True, blank=True)
     job_description_link = models.URLField(
         max_length=255, 
         help_text='link to job description',
+        )
+    full_job_description = models.TextField()
+    short_job_description = models.CharField(max_length=50)
+    job_notes = models.TextField(
+        null=True, 
+        blank=True,
+        help_text='(optional)'
+        )
+    user_location = models.CharField(max_length=255)
+    employment_preference = models.CharField(
+        max_length=20,
+        choices=JobType,
+        default=JobType.FULL_TIME,
+    )
+    job_location = models.CharField(
+        max_length=20,
+        choices=JobMode,
+        default=JobMode.ONSITE,
+    )
+    job_level = models.CharField(
+        max_length=20,
+        choices=JobLevelPreference,
+        default=JobLevelPreference.ENTRY_LEVEL,
+    )
+    linkedin_url = models.URLField(
+        max_length=255,
+        help_text='Enter the Linkedin url of the applicant',
         )
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, 
@@ -51,8 +73,6 @@ class JobTracker(models.Model):
         to_field='email',
         help_text='Email of staff that updated this task.',
         )
-    #application_counter = models.PositiveIntegerField(editable=False, default=0)
-    
 
 
     class Meta:
@@ -63,8 +83,6 @@ class JobTracker(models.Model):
     def __str__(self):
         """ Return a string representation of the model object."""
         return self.applicant.email
-
-    
 
 
 

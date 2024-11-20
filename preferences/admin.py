@@ -8,5 +8,8 @@ class PreferencesAdmin(admin.ModelAdmin):
     list_display = [
         'user_id', 'created_at', 'updated_at', 'email', 'first_name',
         'last_name', 'phone_number', 'profile_picture_url', 'resume_url',
-        'job_preferences', 'userlocation'
+        'job_preferences'
+    ]
+    list_filter = [
+        'email', 'job_preferences'
     ]
