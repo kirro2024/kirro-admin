@@ -22,7 +22,7 @@ class JobTracker(models.Model):
     application_status = models.CharField(
         max_length=12,
         choices=ApplicationStatus,
-        default=ApplicationStatus.IN_PROGRESS,
+        default=ApplicationStatus.APPLIED,
         )
     shared_email = models.EmailField()
     sensitive_info = EncryptedCharField(max_length=100)
@@ -57,12 +57,8 @@ class JobTracker(models.Model):
         max_length=255,
         help_text='Enter the Linkedin url of the applicant',
         )
-    created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, 
-        on_delete=models.CASCADE, 
-        limit_choices_to={"is_staff": True},
-        related_name='dep_create',
-        to_field='email',
+    created_by = models.CharField(
+        max_length=255,
         help_text='Email of staff initially responsible for this task.',
         )
     updated_by = models.ForeignKey(
@@ -73,7 +69,8 @@ class JobTracker(models.Model):
         to_field='email',
         help_text='Email of staff that updated this task.',
         )
-
+    salary_range = models.CharField(max_length=100)
+    
 
     class Meta:
         verbose_name_plural = 'Job Tracker Information'
