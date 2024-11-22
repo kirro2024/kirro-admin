@@ -4,11 +4,10 @@ from django.utils.translation import gettext_lazy as _
 
 class ApplicationStatus(models.TextChoices):
     """ Model Choices."""
-    IN_PROGRESS = "In Progress", _("In Progress")
-    APPLIED = "Applied", _("Applied")
-    REJECTED = "Rejected", _("Rejected")
-    INTERVIEW = "Interview", _("Interview")
-    OFFER = "Offer", _("Offer")
+    APPLIED = "applied", _("Applied")
+    REJECTED = "rejected", _("Rejected")
+    INTERVIEW = "interview", _("Interview")
+    OFFER = "offer", _("Offer")
 
 
 class JobType(models.TextChoices):

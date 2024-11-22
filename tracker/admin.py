@@ -1,7 +1,6 @@
 from django.contrib import admin
 
 from .models import JobTracker
-from preferences.models import UserProfile
 from django.db.models import F, Count
 
 
@@ -23,7 +22,19 @@ class JobTrackerAdmin(admin.ModelAdmin):
         'application_count'
         ]
     list_filter = ['applicant__email',]
+    readonly_fields = ['created_by']
     
     def application_count(self, obj):
         job_tracker = list(JobTracker.objects.values("applicant").annotate(Count('applicant')))
         return job_tracker
+
+    # def get_form(self, request, obj=None, **kwargs):
+    #     form = super().get_form(request, obj, **kwargs)
+    #     form.base_fields['created_by'].initial = request.user
+    #     return form
+
+    def save_model(self, request, obj, form, change):
+        if not obj.created_by:
+            obj.created_by = request.user
+        super().save_model(request, obj, form, change)
+

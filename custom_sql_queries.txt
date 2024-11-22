@@ -1,0 +1,7 @@
+---------------------------------------------------------------
+update metrics
+set jobs_applied =
+(select count (applicant_id) from tracker_jobtracker
+where tracker_jobtracker.applicant_id = metrics.email_id)
+
+----------------------------------------------------------------
