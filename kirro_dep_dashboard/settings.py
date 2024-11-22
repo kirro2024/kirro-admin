@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = config('DEBUG', cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['kirro.pythonanywhere.com', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -80,11 +80,11 @@ WSGI_APPLICATION = "kirro_dep_dashboard.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": config("NAME"),
-        "USER": config("USER"),
-        "PASSWORD": config("PASSWORD"),
-        "HOST": config("HOST"),
-        "PORT": config("PORT"),
+        "NAME": "postgres",
+        "USER": "postgres.xilwepmfboaisqwiidlp",
+        "PASSWORD": "ILkHTqOwXPzict9m",
+        "HOST": "aws-0-us-west-1.pooler.supabase.com",
+        "PORT": "6543",
     }
 }
 
