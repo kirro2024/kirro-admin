@@ -1,7 +1,6 @@
 from django.contrib import admin
-from preferences.models import UserProfile
+
 from .models import JobTracker
-from django.db.models import Count
 
 
 # Customising the admin interface

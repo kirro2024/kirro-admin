@@ -1,7 +1,6 @@
 from django.contrib import admin
 from .models import Metrics
 #from django.db.models import F
-from tracker.models import JobTracker
 
 
 @admin.register(Metrics)
