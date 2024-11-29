@@ -11,6 +11,12 @@ class MetricsAdmin(admin.ModelAdmin):
         'hours_saved', 'total_jobs_available', 'limit_left',
         ]
 
+    readonly_fields = [
+        'id', 'user_uuid', 'jobs_applied', 'num_of_interviews_landed', 
+        'hours_saved', 'total_jobs_available', 'limit_left',
+        ]
+
+
     # -------------- now implemented in sql ---------------------
 
     # def num_of_hours_saved(self, obj):
