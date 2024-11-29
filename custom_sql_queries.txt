@@ -1,29 +1,28 @@
--- Automatically populate metrics with emails from tracker_jobtracker
+-- autopopulate uuid field on tracker_jobtracker
 
-INSERT INTO metrics (email_id)
-SELECT applicant_id FROM tracker_jobtracker 
-WHERE NOT EXISTS (Select email_id From metrics WHERE tracker_jobtracker.applicant_id = metrics.email_id)
-
-
--- Automatically update number of interviews landed
-
-update metrics
-set num_of_interviews_landed =
-(select count (application_status='interview') from tracker_jobtracker
-where application_status = 'interview' and tracker_jobtracker.applicant_id = metrics.email_id)
+update tracker_jobtracker
+set applicant_uuid = 
+(select user_id from user_profile 
+where tracker_jobtracker.applicant_id = user_profile.email)
 
 
--- Automatically update number of jobs applied per applicant
+-- Update total number of available jobs in metrics
 
 update metrics
-set jobs_applied =
-(select count (applicant_id) from tracker_jobtracker
-where tracker_jobtracker.applicant_id = metrics.email_id)
-
-
--- Calculate hours saved
-
-UPDATE metrics set hours_saved = CAST(jobs_applied * 0.25 AS INT)
+set
+  total_jobs_available = case price_id
+    when 'price_1QH5eaLiqa1y3Po75xESYXcH' then 50
+    when 'price_1QH5l4Liqa1y3Po7iqehTvsd' then 125
+    when 'price_1QH5iaLiqa1y3Po7rlkC3AVV' then 150
+    when 'price_1QH5mtLiqa1y3Po7FuzPX1Gz' then 200
+    when 'price_1QH5llLiqa1y3Po7zjzc66yQ' then 375
+    when 'price_1QH5oHLiqa1y3Po7dFbNimvf' then 600
+    else 0
+  end
+from
+  subscriptions
+where
+  metrics.user_uuid = subscriptions.user_id;
 
 
 -- Calculate limit left
@@ -31,8 +30,33 @@ UPDATE metrics set hours_saved = CAST(jobs_applied * 0.25 AS INT)
 UPDATE metrics set limit_left = total_jobs_available - jobs_applied
 
 
+-- Calculate hours saved
 
---------------------------------------------------------------------------------------------
+UPDATE metrics set hours_saved = CAST(jobs_applied * 0.25 AS INT)
+
+
+-- Automatically populate metrics with emails from tracker_jobtracker
+
+INSERT INTO metrics (user_uuid)
+SELECT user_id FROM subscriptions 
+WHERE NOT EXISTS (Select user_uuid From metrics WHERE subscriptions.user_id = metrics.user_uuid)
+
+
+-- Automatically update number of interviews landed
+
+update metrics
+set num_of_interviews_landed =
+(select count (application_status='interview') from tracker_jobtracker
+where application_status = 'interview' and tracker_jobtracker.applicant_uuid = metrics.user_uuid)
+
+
+-- Automatically update number of jobs applied per applicant
+
+update metrics
+set jobs_applied =
+(select count (applicant_uuid) from tracker_jobtracker
+where tracker_jobtracker.applicant_uuid = metrics.user_uuid)
+
 
 -- Automatically schedule tasks
 
@@ -41,8 +65,8 @@ select
     '*/1 * * * *',
     $$UPDATE metrics
 SET jobs_applied =
-(SELECT COUNT(applicant_id) FROM tracker_jobtracker
-WHERE tracker_jobtracker.applicant_id = metrics.email_id);$$
+(SELECT COUNT(applicant_uuid) FROM tracker_jobtracker
+WHERE tracker_jobtracker.applicant_uuid = metrics.user_uuid);$$
   );
 
 SELECT
@@ -54,7 +78,7 @@ SELECT
   (SELECT COUNT(application_status='interview') 
   FROM tracker_jobtracker 
   WHERE application_status = 'interview' 
-  AND tracker_jobtracker.applicant_id = metrics.email_id);
+  AND tracker_jobtracker.applicant_uuid = metrics.user_uuid);
 $$
   );
 
@@ -62,9 +86,42 @@ SELECT
   cron.schedule (
     '*/1 * * * *',
     $$
-    INSERT INTO metrics (email_id)
-    SELECT applicant_id FROM tracker_jobtracker
-    WHERE NOT EXISTS (SELECT email_id FROM metrics WHERE tracker_jobtracker.applicant_id = metrics.email_id);
+    INSERT INTO metrics (user_uuid)
+    SELECT user_id FROM subscriptions
+    WHERE NOT EXISTS (SELECT user_uuid FROM metrics WHERE subscriptions.user_id = metrics.user_uuid);
+$$
+  );
+
+SELECT
+  cron.schedule (
+    '*/1 * * * *',
+    $$
+    UPDATE metrics
+SET
+  total_jobs_available = CASE price_id
+    WHEN 'price_1QH5eaLiqa1y3Po75xESYXcH' THEN 50
+    WHEN 'price_1QH5l4Liqa1y3Po7iqehTvsd' THEN 125
+    WHEN 'price_1QH5iaLiqa1y3Po7rlkC3AVV' THEN 150
+    WHEN 'price_1QH5mtLiqa1y3Po7FuzPX1Gz' THEN 200
+    WHEN 'price_1QH5llLiqa1y3Po7zjzc66yQ' THEN 375
+    WHEN 'price_1QH5oHLiqa1y3Po7dFbNimvf' THEN 600
+    ELSE 0
+  END
+FROM
+  subscriptions
+WHERE
+  metrics.user_uuid = subscriptions.user_id;
+    
+$$
+  );
+SELECT
+  cron.schedule (
+    '* * * * *',
+    $$
+    UPDATE tracker_jobtracker
+    SET applicant_uuid = 
+    (SELECT user_id FROM user_profile 
+    WHERE tracker_jobtracker.applicant_id = user_profile.email)
 $$
   );
 
@@ -85,5 +142,13 @@ SELECT
     SET limit_left = total_jobs_available - jobs_applied;
 $$
   );
+
+
+
+
+
+
+
+
 
 
