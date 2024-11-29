@@ -1,7 +1,89 @@
----------------------------------------------------------------
+-- Automatically populate metrics with emails from tracker_jobtracker
+
+INSERT INTO metrics (email_id)
+SELECT applicant_id FROM tracker_jobtracker 
+WHERE NOT EXISTS (Select email_id From metrics WHERE tracker_jobtracker.applicant_id = metrics.email_id)
+
+
+-- Automatically update number of interviews landed
+
+update metrics
+set num_of_interviews_landed =
+(select count (application_status='interview') from tracker_jobtracker
+where application_status = 'interview' and tracker_jobtracker.applicant_id = metrics.email_id)
+
+
+-- Automatically update number of jobs applied per applicant
+
 update metrics
 set jobs_applied =
 (select count (applicant_id) from tracker_jobtracker
 where tracker_jobtracker.applicant_id = metrics.email_id)
 
-----------------------------------------------------------------
+
+-- Calculate hours saved
+
+UPDATE metrics set hours_saved = CAST(jobs_applied * 0.25 AS INT)
+
+
+-- Calculate limit left
+
+UPDATE metrics set limit_left = total_jobs_available - jobs_applied
+
+
+
+--------------------------------------------------------------------------------------------
+
+-- Automatically schedule tasks
+
+select
+  cron.schedule (
+    '*/1 * * * *',
+    $$UPDATE metrics
+SET jobs_applied =
+(SELECT COUNT(applicant_id) FROM tracker_jobtracker
+WHERE tracker_jobtracker.applicant_id = metrics.email_id);$$
+  );
+
+SELECT
+  cron.schedule (
+    '*/1 * * * *',
+    $$ 
+    UPDATE metrics 
+  SET num_of_interviews_landed = 
+  (SELECT COUNT(application_status='interview') 
+  FROM tracker_jobtracker 
+  WHERE application_status = 'interview' 
+  AND tracker_jobtracker.applicant_id = metrics.email_id);
+$$
+  );
+
+SELECT
+  cron.schedule (
+    '*/1 * * * *',
+    $$
+    INSERT INTO metrics (email_id)
+    SELECT applicant_id FROM tracker_jobtracker
+    WHERE NOT EXISTS (SELECT email_id FROM metrics WHERE tracker_jobtracker.applicant_id = metrics.email_id);
+$$
+  );
+
+SELECT
+  cron.schedule (
+    '* * * * *',
+    $$
+    UPDATE metrics
+    SET hours_saved = CAST(jobs_applied * 0.25 AS INT);
+$$
+  );
+
+SELECT
+  cron.schedule (
+    '*/1 * * * *',
+    $$
+    UPDATE metrics
+    SET limit_left = total_jobs_available - jobs_applied;
+$$
+  );
+
+

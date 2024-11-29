@@ -1,9 +1,10 @@
 from django.db import models
-
+from uuid import uuid4
 from preferences.models import UserProfile
 from django.conf import settings
 from .callables import ApplicationStatus, JobType, JobMode, JobLevelPreference
 from encrypted_model_fields.fields import EncryptedCharField
+
 
 
 class JobTracker(models.Model):
@@ -14,6 +15,7 @@ class JobTracker(models.Model):
         to_field='email',
         help_text='Email of applicant',
         )
+    applicant_uuid = models.UUIDField(blank=True, null=True)
     company_applied_to = models.CharField(max_length=255)
     position_applied = models.CharField(max_length=255)
     date_submitted = models.DateField(auto_now_add=True)

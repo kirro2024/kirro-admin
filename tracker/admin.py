@@ -1,7 +1,7 @@
 from django.contrib import admin
-
+from preferences.models import UserProfile
 from .models import JobTracker
-from django.db.models import F, Count
+from django.db.models import Count
 
 
 # Customising the admin interface
@@ -13,25 +13,15 @@ admin.site.index_title = 'Welcome to Kirro Admin Portal'
 @admin.register(JobTracker)
 class JobTrackerAdmin(admin.ModelAdmin):
     list_display = [
-        'applicant', 'company_applied_to', 
+        'applicant', 'applicant_uuid', 'company_applied_to', 
         'position_applied', 'date_submitted', 'experience_required', 
         'resume_used', 'application_status', 'shared_email', 'sensitive_info', 
         'job_notes', 'job_description_link', 'created_by', 'updated_by',
         'full_job_description', 'short_job_description', 'user_location', 
-        'employment_preference', 'job_location', 'job_level', 'linkedin_url', 
-        'application_count'
-        ]
+        'employment_preference', 'job_location', 'job_level', 'linkedin_url']
     list_filter = ['applicant__email',]
-    readonly_fields = ['created_by']
-    
-    def application_count(self, obj):
-        job_tracker = list(JobTracker.objects.values("applicant").annotate(Count('applicant')))
-        return job_tracker
+    readonly_fields = ['applicant_uuid', 'created_by']
 
-    # def get_form(self, request, obj=None, **kwargs):
-    #     form = super().get_form(request, obj, **kwargs)
-    #     form.base_fields['created_by'].initial = request.user
-    #     return form
 
     def save_model(self, request, obj, form, change):
         if not obj.created_by:
