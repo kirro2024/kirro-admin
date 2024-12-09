@@ -12,11 +12,11 @@ admin.site.index_title = 'Welcome to Kirro Admin Portal'
 @admin.register(JobTracker)
 class JobTrackerAdmin(admin.ModelAdmin):
     list_display = [
-        'applicant', 'applicant_uuid', 'company_applied_to', 
-        'position_applied', 'date_submitted', 'experience_required', 
-        'resume_used', 'application_status', 'shared_email', 'sensitive_info', 
+        'applicant', 'applicant_uuid', 'company_applied_to',
+        'position_applied', 'date_submitted', 'experience_required',
+        'application_status', 'shared_email', 'shared_email_password',
         'job_notes', 'job_description_link', 'created_by', 'updated_by',
-        'full_job_description', 'short_job_description', 'user_location', 
+        'full_job_description', 'short_job_description', 'user_location',
         'employment_preference', 'job_location', 'job_level', 'linkedin_url']
     list_filter = ['applicant__email',]
     readonly_fields = ['applicant_uuid', 'created_by']
