@@ -21,7 +21,7 @@ class JobTracker(models.Model):
         )
     company_applied_to = models.CharField(max_length=255, help_text='[required]')
     position_applied = models.CharField(max_length=255, help_text='[required]')
-    date_submitted = models.DateField(auto_now_add=True)
+    date_submitted = models.DateTimeField(auto_now=True)
     experience_required = models.CharField(max_length=50, help_text='[required]')
     #resume_used = models.FileField(upload_to="uploads/%Y/%m/%d/")
     application_status = models.CharField(
@@ -32,9 +32,10 @@ class JobTracker(models.Model):
         )
     shared_email = models.EmailField(blank=True, null=True)
     shared_email_password = EncryptedCharField(max_length=100, blank=True, null=True)
+    resume_url = models.URLField(max_length=255, blank=True, null=True)
     job_description_link = models.URLField(max_length=255, help_text='[required]')
     full_job_description = models.TextField(help_text='[required]')
-    short_job_description = models.CharField(max_length=50, help_text='[required]')
+    short_job_description = models.CharField(max_length=255, help_text='[required]')
     job_notes = models.TextField(blank=True, null=True)
     user_location = models.CharField(max_length=255, blank=True, null=True)
     employment_preference = models.CharField(

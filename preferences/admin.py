@@ -1,5 +1,6 @@
 from django.contrib import admin
-
+from django.db.models import JSONField
+from django_json_widget.widgets import JSONEditorWidget
 from .models import UserProfile
 
 
@@ -8,8 +9,9 @@ class PreferencesAdmin(admin.ModelAdmin):
     list_display = [
         'user_id', 'created_at', 'updated_at', 'email', 'first_name',
         'last_name', 'phone_number', 'profile_picture_url', 'resume_url',
-        'job_preferences'
+
     ]
-    list_filter = [
-        'email', 'job_preferences'
-    ]
+    formfield_overrides = {
+        JSONField: {'widget': JSONEditorWidget},
+    }
+    list_filter = ['email']

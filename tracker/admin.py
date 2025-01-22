@@ -1,6 +1,7 @@
 from django.contrib import admin
-
+from charfield_filters.admin import CharFieldFilterMixin
 from .models import JobTracker
+from more_admin_filters import MultiSelectDropdownFilter
 
 
 # Customising the admin interface
@@ -10,16 +11,17 @@ admin.site.index_title = 'Welcome to Kirro Admin Portal'
 
 
 @admin.register(JobTracker)
-class JobTrackerAdmin(admin.ModelAdmin):
+class JobTrackerAdmin(CharFieldFilterMixin, admin.ModelAdmin):
     list_display = [
-        'applicant', 'applicant_uuid', 'company_applied_to',
-        'position_applied', 'date_submitted', 'experience_required',
-        'application_status', 'shared_email', 'shared_email_password',
-        'job_notes', 'job_description_link', 'created_by', 'updated_by',
-        'full_job_description', 'short_job_description', 'user_location',
-        'employment_preference', 'job_location', 'job_level', 'linkedin_url']
-    list_filter = ['applicant__email',]
+        'applicant', 'company_applied_to', 'position_applied',
+        'date_submitted', 'experience_required', 'application_status',
+        'shared_email', 'resume_url', 'job_notes', 'job_description_link',
+        'created_by', 'updated_by', 'short_job_description', 'user_location',
+        'employment_preference', 'job_location', 'job_level']
+    list_filter = [('applicant__email', MultiSelectDropdownFilter)]
     readonly_fields = ['applicant_uuid', 'created_by']
+    charfield_filter_fields = ['company_applied_to', 'position_applied', 'short_job_description']
+    charfield_filter_type = 'autocomplete_select'
 
 
     def save_model(self, request, obj, form, change):

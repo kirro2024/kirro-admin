@@ -34,6 +34,9 @@ INSTALLED_APPS = [
     # Third party apps
     'encrypted_model_fields',
     'django_countries',
+    'django_json_widget',
+    'more_admin_filters',
+    'charfield_filters',
 
     # Local apps
     'users.apps.UsersConfig',
