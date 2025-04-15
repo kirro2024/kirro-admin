@@ -2,8 +2,7 @@ from django.db import models
 from preferences.models import UserProfile
 from django.conf import settings
 from .callables import ApplicationStatus, JobType, JobMode, JobLevelPreference
-from encrypted_model_fields.fields import EncryptedCharField
-
+#from encrypted_model_fields.fields import EncryptedCharField
 
 
 class JobTracker(models.Model):
@@ -19,20 +18,19 @@ class JobTracker(models.Model):
         null=True,
         help_text="Applicant's User ID."
         )
+    no_of_jobs_applied = models.PositiveIntegerField(blank=True, null=True)
+    no_of_interviews_landed = models.PositiveIntegerField(blank=True, null=True)
     company_applied_to = models.CharField(max_length=255, help_text='[required]')
     position_applied = models.CharField(max_length=255, help_text='[required]')
-    date_submitted = models.DateTimeField(auto_now=True)
+    date_submitted = models.DateTimeField(auto_now_add=True)
+    date_updated = models.DateTimeField(auto_now=True)
     experience_required = models.CharField(max_length=50, help_text='[required]')
-    #resume_used = models.FileField(upload_to="uploads/%Y/%m/%d/")
     application_status = models.CharField(
         max_length=12,
         choices=ApplicationStatus,
         default=ApplicationStatus.APPLIED,
         help_text='[required]'
         )
-    shared_email = models.EmailField(blank=True, null=True)
-    shared_email_password = EncryptedCharField(max_length=100, blank=True, null=True)
-    resume_url = models.URLField(max_length=255, blank=True, null=True)
     job_description_link = models.URLField(max_length=255, help_text='[required]')
     full_job_description = models.TextField(help_text='[required]')
     short_job_description = models.CharField(max_length=255, help_text='[required]')
@@ -70,9 +68,12 @@ class JobTracker(models.Model):
         help_text='[required]',
         )
     salary_range = models.CharField(max_length=50, blank=True, null=True)
+    resume_used = models.URLField(blank=True, null=True)
+    offer_letter = models.URLField(blank=True, null=True)
 
 
     class Meta:
+        managed = True
         verbose_name_plural = 'Job Tracker Information'
         ordering = ['-date_submitted']
 
@@ -81,6 +82,25 @@ class JobTracker(models.Model):
         """ Return a string representation of the model object."""
         return self.applicant.email
 
+
+class UserJobMetaData(models.Model):
+    """Model a User meta data."""
+    user_email = models.EmailField(blank=True, null=True)
+    shared_email = models.EmailField(blank=True, null=True)
+    shared_email_password = models.CharField(max_length=100, blank=True, null=True)
+    resume_url = models.URLField(blank=True, null=True)
+    preferences_complete = models.BooleanField(blank=True, null=True)
+
+
+    class Meta:
+        managed = True
+        verbose_name = 'User Meta Data'
+        verbose_name_plural = 'User Meta Data'
+
+
+    def __str__(self):
+        """Return a string representation of the model object."""
+        return self.user_email
 
 
 

@@ -9,9 +9,10 @@ class PreferencesAdmin(admin.ModelAdmin):
     list_display = [
         'user_id', 'created_at', 'updated_at', 'email', 'first_name',
         'last_name', 'phone_number', 'profile_picture_url', 'resume_url',
-
+        'onboardingcomplete', 'referral_source', 'address',
     ]
     formfield_overrides = {
         JSONField: {'widget': JSONEditorWidget},
     }
     list_filter = ['email']
+    search_fields = ['email']   # makes autocomplete_fields to work on the relation.

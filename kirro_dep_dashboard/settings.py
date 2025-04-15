@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     # Local apps
     'users.apps.UsersConfig',
     'tracker.apps.TrackerConfig',
-    'api.apps.ApiConfig',
     'preferences.apps.PreferencesConfig',
     'metrics.apps.MetricsConfig',
 ]
